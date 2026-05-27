@@ -1,13 +1,13 @@
 # ClawTalk
 
-ClawTalk is a Windows desktop MVP for talking to an OpenClaw agent from a simple local app. The current implementation focuses on the text-only loop first: type a message, send it over SSH, see the reply in the window, and have Windows text-to-speech read the reply aloud.
+ClawTalk is a Windows desktop MVP for talking to an OpenClaw agent from a simple local app. The current implementation now supports a full local voice loop and presents it in a conversation-first UI for normal daily use: hold push-to-talk, let ClawTalk transcribe and send automatically, read the transcript, and hear Saga speak the reply.
 
 ## Current MVP Status
 
-- Phase 1 implemented: text input, SSH request to OpenClaw, visible reply, TTS playback, and timestamped conversation log.
+- Phase 1 implemented: text input, SSH request to OpenClaw, visible reply, and TTS playback.
 - Phase 3 implemented: local WAV recording with a button and global push-to-talk hotkey.
 - Phase 4 implemented: transcribe the most recent recording into the manual message box for review and editing.
-- Phase 5 implemented: optional auto-transcribe and optional auto-send voice loop after recording.
+- Phase 5 implemented: auto-transcribe and auto-send voice loop after recording, enabled by default.
 
 ## Why `tkinter`
 
@@ -29,6 +29,8 @@ clawtalk/
     placeholder_backend.py
   tts/
     __init__.py
+    base.py
+    openai_tts.py
     windows_tts.py
   openclaw/
     __init__.py
@@ -39,6 +41,7 @@ clawtalk/
     __init__.py
     main_window.py
   gateway_probe.py
+  tts_test.py
 requirements.txt
 README.md
 clawtalk.example.toml
@@ -69,7 +72,7 @@ pip install -r requirements.txt
 Copy-Item clawtalk.example.toml clawtalk.toml
 ```
 
-2. Edit `clawtalk.toml` if you need to change the SSH target, user, or agent.
+2. Edit `clawtalk.toml` if you need to change advanced settings such as transport, gateway URL, agent, microphone device index, hotkey, STT backend, or TTS backend.
 
 Default values:
 
@@ -83,6 +86,13 @@ Default values:
 - `gateway_token = ""`
 - `gateway_agent = "openclaw/saga"`
 - `gateway_timeout_seconds = 60`
+- `tts_backend = "windows"`
+- `openai_tts_model = "gpt-4o-mini-tts"`
+- `openai_tts_voice = "sage"`
+- `openai_tts_format = "wav"`
+- `openai_tts_api_key_env = "OPENAI_API_KEY"`
+- `openai_tts_timeout_seconds = 60`
+- `openai_tts_fallback_to_windows = false`
 - `push_to_talk_hotkey = "ctrl+shift+f9"`
 - `recordings_directory = ""`
 - `input_device_index` omitted uses the system default microphone
@@ -90,8 +100,9 @@ Default values:
 - `whisper_model_size = "base"`
 - `whisper_device = "auto"`
 - `whisper_compute_type = "auto"`
-- `auto_transcribe_after_recording = false`
-- `auto_send_after_transcription = false`
+- `auto_transcribe_after_recording = true`
+- `auto_send_after_transcription = true`
+- `debug_mode = false`
 
 ### Configure SSH Access to Eitri / OpenClaw
 
@@ -127,6 +138,13 @@ Successful result from PowerShell:
 This is working.
 ```
 
+## Normal Mode vs Debug Mode
+
+- Normal mode is the default. The `Conversation` tab stays focused on the transcript, text input, send button, and voice controls.
+- Debug mode is off by default. Timing lines, transport diagnostics, STT details, TTS details, and runtime errors move into the `Settings` tab under `Debug Log`.
+- Advanced runtime info such as transport, agent/model, microphone, TTS backend, push-to-talk hotkey, and voice behavior toggles also lives in the `Settings` tab.
+- Secrets are never shown directly in the UI. Token state is shown only as `configured` or `missing`.
+
 ## Run The App
 
 From the repo root:
@@ -135,10 +153,22 @@ From the repo root:
 python -m clawtalk.app
 ```
 
+Daily-use UI notes:
+
+- Use the `Conversation` tab for normal chatting.
+- Use push-to-talk as the primary voice input.
+- Use the `Settings` tab for advanced controls and the optional debug log.
+
 Developer TTS smoke test:
 
 ```powershell
 python -m clawtalk.tts.windows_tts_test
+```
+
+Config-aware TTS backend test:
+
+```powershell
+python -m clawtalk.tts_test "Hello, this is Saga."
 ```
 
 List available input devices:
@@ -167,12 +197,11 @@ python -m clawtalk.gateway_probe
 - SSH remains the default stable transport
 - Safe quoting for the agent name and user message inside the remote command template
 - SSH config alias support through `ssh_target`
-- Last user message display
-- Last OpenClaw reply display
-- Timestamped scrolling conversation log
+- Clean scrolling conversation transcript with `Me:` and `Saga:` lines
 - Windows TTS playback through `pyttsx3`
-- Basic mute checkbox
-- Basic config and error visibility in the UI
+- Pluggable TTS backends with Windows TTS as the default fallback
+- Runtime settings tab for mute, auto-transcribe, auto-send, and debug mode
+- Advanced transport and device visibility in the UI without exposing secrets
 - Background threads for SSH and TTS so the UI does not block during those tasks
 
 ## Phase 2 Polish
@@ -208,6 +237,12 @@ python -m clawtalk.gateway_probe
 - Silent recordings and empty transcripts are not auto-sent
 - The app logs before auto-send so the behavior stays visible
 
+Current defaults:
+
+- `Auto-transcribe after recording` starts enabled
+- `Auto-send after transcription` starts enabled
+- Turn them off in the `Settings` tab if you want a slower manual review loop for the current session
+
 ## What Is Still TODO
 
 - Streaming or partial responses
@@ -219,7 +254,7 @@ python -m clawtalk.gateway_probe
 - The app currently sends one request at a time.
 - SSH output is treated as a single final reply, not a streamed response.
 - TTS state is approximate in this MVP and does not yet track exact playback completion.
-- Auto-send should stay off until you trust the microphone level and transcription quality for your setup.
+- Auto-send starts on by default now, but you may still want to turn it off temporarily while tuning your microphone and transcript quality.
 - Config is file-based only and edited outside the app.
 - No installer or packaged `.exe` yet.
 
@@ -230,7 +265,7 @@ python -m clawtalk.gateway_probe
 - Click `Start Recording` to begin a local WAV recording.
 - Click `Stop Recording` to save it.
 - Or hold `Ctrl+Shift+F9` anywhere on Windows to start recording and release it to stop.
-- Watch the conversation log for the saved file path, duration, file size, peak amplitude, and RMS level.
+- Turn on `Debug mode` in the `Settings` tab if you want to inspect the saved file path, duration, file size, peak amplitude, and RMS level.
 - If you want a custom output folder, set `recordings_directory` in `clawtalk.toml`.
 
 ## Phase 4 Usage
@@ -244,15 +279,56 @@ python -m clawtalk.gateway_probe
 ## Phase 5 Usage
 
 - Manual mode:
-  Leave both auto options off. Recording, transcription, and sending stay manual.
+  Turn both auto options off in the `Settings` tab. Recording, transcription, and sending stay manual.
 - Auto-transcribe mode:
-  Enable `Auto-transcribe after recording`.
+  Leave `Auto-transcribe after recording` on and turn `Auto-send after transcription` off.
   After each recording, ClawTalk transcribes into the message box but does not send.
 - Full auto-send voice loop:
-  Enable both `Auto-transcribe after recording` and `Auto-send after transcription`.
+  Leave both defaults enabled.
   After recording, ClawTalk transcribes, sends the transcript to OpenClaw, displays the reply, and speaks it.
 - Recommendation:
-  Keep auto-send off until you trust your mic volume and transcript quality.
+  If you are still tuning your microphone or STT accuracy, turn off auto-send temporarily in the `Settings` tab.
+
+## TTS Backends
+
+### Windows TTS
+
+- Default backend
+- Uses built-in Windows speech through `pyttsx3`
+- Lowest setup burden and the easiest fallback
+
+### OpenAI TTS
+
+- Experimental backend for higher-quality speech
+- Uses the OpenAI Audio speech endpoint
+- Reads the API key from an environment variable only
+- Saves generated audio to a temp file and plays it locally
+- Supports `wav` and `mp3` output formats
+- Can optionally fall back to Windows TTS if `openai_tts_fallback_to_windows = true`
+
+PowerShell example for the current shell session:
+
+```powershell
+$env:OPENAI_API_KEY = "your-api-key-here"
+```
+
+Example config:
+
+```toml
+tts_backend = "openai"
+openai_tts_model = "gpt-4o-mini-tts"
+openai_tts_voice = "sage"
+openai_tts_format = "wav"
+openai_tts_api_key_env = "OPENAI_API_KEY"
+openai_tts_timeout_seconds = 60
+openai_tts_fallback_to_windows = false
+```
+
+To switch back to Windows TTS:
+
+```toml
+tts_backend = "windows"
+```
 
 ## Transport Modes
 
@@ -333,24 +409,32 @@ python -m clawtalk.gateway_probe
 - Reinstall the Python dependencies in your virtual environment.
 - Try muting TTS in the app to confirm SSH and UI still work separately.
 
+### OpenAI TTS Fails
+
+- Confirm the API key environment variable named by `openai_tts_api_key_env` is set before launching ClawTalk.
+- Run `python -m clawtalk.tts_test "Hello, this is Saga."` to test the configured backend outside the main app flow.
+- Reinstall dependencies with `pip install -r requirements.txt` so `pygame` is available for local playback.
+- If you want the old behavior immediately, set `tts_backend = "windows"` in `clawtalk.toml`.
+- If `openai_tts_fallback_to_windows = true`, ClawTalk will try the Windows backend after an OpenAI TTS failure.
+
 ### TTS Only Speaks Once
 
 - Run `python -m clawtalk.tts.windows_tts_test` to verify repeated local playback outside the main UI flow.
 - If that fails, reinstall `pyttsx3` in your active virtual environment and relaunch the app.
-- Watch the app status and conversation log for `TTS ERROR` messages after a send.
+- Watch the app status and debug log for `TTS ERROR` messages after a send.
 
 ### Recording Fails
 
 - Make sure your microphone is connected and selected as the default Windows input device.
 - Check that Windows microphone permissions allow desktop apps to access the mic.
 - Reinstall dependencies with `pip install -r requirements.txt` to ensure `sounddevice` is available.
-- Watch the conversation log for `RECORDER ERROR` messages describing startup, permission, or zero-length issues.
+- Watch the debug log for `RECORDER ERROR` messages describing startup, permission, or zero-length issues.
 
 ### Recordings Are Silent
 
 - Run `python -m clawtalk.recorder_devices` and verify the correct headset microphone index is listed as an input device.
 - If the default device is wrong, set `input_device_index` in `clawtalk.toml` and restart the app.
-- After recording, check the conversation log for `peak=` and `rms=` diagnostics.
+- After recording, enable `Debug mode` and check the debug log for `peak=` and `rms=` diagnostics.
 - If the log shows `WARNING: recording appears silent`, ClawTalk captured near-zero samples even though the WAV was written.
 - Avoid monitor/output devices and pick a device with real input channels, such as your Logitech headset microphone.
 
@@ -369,7 +453,7 @@ python -m clawtalk.gateway_probe
 
 - A quiet recording usually leads to a weaker transcript.
 - Check Windows input volume and headset microphone gain.
-- Review the recording diagnostics in the conversation log for `peak=` and `rms=` values.
+- Review the recording diagnostics in the debug log for `peak=` and `rms=` values.
 - 48000 Hz WAVs are expected and do not need to be manually converted before transcription.
 
 ### Auto-Send Did Not Trigger
@@ -378,7 +462,7 @@ python -m clawtalk.gateway_probe
 - Silent recordings are not auto-sent.
 - Empty transcripts are not auto-sent.
 - If transcription fails, nothing is sent.
-- Check the conversation log for `Auto-send enabled` or `Auto-send skipped` messages.
+- Turn on `Debug mode` and check the debug log for `Auto-send enabled` or `Auto-send skipped` messages.
 
 ### Push-To-Talk Hotkey Fails
 

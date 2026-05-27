@@ -28,6 +28,9 @@ class VoiceLoopTests(unittest.TestCase):
         self.assertTrue(should_auto_transcribe_recording(True, self._recording(False)))
         self.assertFalse(should_auto_transcribe_recording(False, self._recording(False)))
 
+    def test_should_auto_transcribe_requires_recording(self) -> None:
+        self.assertFalse(should_auto_transcribe_recording(True, None))
+
     def test_should_auto_send_rejects_empty_transcript(self) -> None:
         result = STTResult(transcript_text="   ", duration_seconds=1.0, backend_name="fw")
         should_send, reason = should_auto_send_transcript(True, self._recording(False), result)

@@ -14,6 +14,13 @@ gateway_url = "http://100.64.0.10:8080"
 gateway_token = "super-secret-token"
 gateway_agent = "saga"
 gateway_timeout_seconds = 45
+tts_backend = "openai"
+openai_tts_model = "gpt-4o-mini-tts"
+openai_tts_voice = "sage"
+openai_tts_format = "mp3"
+openai_tts_api_key_env = "MY_OPENAI_KEY"
+openai_tts_timeout_seconds = 75
+openai_tts_fallback_to_windows = true
 stt_backend = "placeholder"
 whisper_model_size = "tiny"
 whisper_device = "cpu"
@@ -41,6 +48,27 @@ input_device_index = 33
         self.assertEqual(config.gateway_token, "super-secret-token")
         self.assertEqual(config.gateway_agent, "saga")
         self.assertEqual(config.gateway_timeout_seconds, 45)
+        self.assertEqual(config.tts_backend, "openai")
+        self.assertEqual(config.openai_tts_model, "gpt-4o-mini-tts")
+        self.assertEqual(config.openai_tts_voice, "sage")
+        self.assertEqual(config.openai_tts_format, "mp3")
+        self.assertEqual(config.openai_tts_api_key_env, "MY_OPENAI_KEY")
+        self.assertEqual(config.openai_tts_timeout_seconds, 75)
+        self.assertTrue(config.openai_tts_fallback_to_windows)
+
+    def test_load_config_defaults_auto_transcribe_auto_send_and_debug_mode(self) -> None:
+        config_text = """
+transport = "ssh"
+ssh_target = "eitri-openclaw"
+"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_path = Path(temp_dir) / "clawtalk.toml"
+            config_path.write_text(config_text, encoding="utf-8")
+            config = load_config(config_path)
+
+        self.assertTrue(config.auto_transcribe_after_recording)
+        self.assertTrue(config.auto_send_after_transcription)
+        self.assertFalse(config.debug_mode)
 
 
 if __name__ == "__main__":

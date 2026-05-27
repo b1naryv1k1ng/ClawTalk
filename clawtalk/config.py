@@ -28,6 +28,13 @@ class AppConfig:
     gateway_token: str = ""
     gateway_agent: str = "openclaw/saga"
     gateway_timeout_seconds: int = 60
+    tts_backend: str = "windows"
+    openai_tts_model: str = "gpt-4o-mini-tts"
+    openai_tts_voice: str = "sage"
+    openai_tts_format: str = "wav"
+    openai_tts_api_key_env: str = "OPENAI_API_KEY"
+    openai_tts_timeout_seconds: int = 60
+    openai_tts_fallback_to_windows: bool = False
     mute_tts: bool = False
     push_to_talk_hotkey: str = "ctrl+shift+f9"
     recordings_directory: str = ""
@@ -36,8 +43,9 @@ class AppConfig:
     whisper_model_size: str = "base"
     whisper_device: str = "auto"
     whisper_compute_type: str = "auto"
-    auto_transcribe_after_recording: bool = False
-    auto_send_after_transcription: bool = False
+    auto_transcribe_after_recording: bool = True
+    auto_send_after_transcription: bool = True
+    debug_mode: bool = False
 
 
 class ConfigError(Exception):
@@ -86,6 +94,29 @@ def load_config(config_path: Path = DEFAULT_CONFIG_PATH) -> AppConfig:
             "gateway_timeout_seconds",
             AppConfig.gateway_timeout_seconds,
         ),
+        tts_backend=_read_string(raw_config, "tts_backend", AppConfig.tts_backend),
+        openai_tts_model=_read_string(
+            raw_config, "openai_tts_model", AppConfig.openai_tts_model
+        ),
+        openai_tts_voice=_read_string(
+            raw_config, "openai_tts_voice", AppConfig.openai_tts_voice
+        ),
+        openai_tts_format=_read_string(
+            raw_config, "openai_tts_format", AppConfig.openai_tts_format
+        ),
+        openai_tts_api_key_env=_read_string(
+            raw_config, "openai_tts_api_key_env", AppConfig.openai_tts_api_key_env
+        ),
+        openai_tts_timeout_seconds=_read_int(
+            raw_config,
+            "openai_tts_timeout_seconds",
+            AppConfig.openai_tts_timeout_seconds,
+        ),
+        openai_tts_fallback_to_windows=_read_bool(
+            raw_config,
+            "openai_tts_fallback_to_windows",
+            AppConfig.openai_tts_fallback_to_windows,
+        ),
         mute_tts=_read_bool(raw_config, "mute_tts", AppConfig.mute_tts),
         push_to_talk_hotkey=_read_string(
             raw_config, "push_to_talk_hotkey", AppConfig.push_to_talk_hotkey
@@ -115,6 +146,11 @@ def load_config(config_path: Path = DEFAULT_CONFIG_PATH) -> AppConfig:
             raw_config,
             "auto_send_after_transcription",
             AppConfig.auto_send_after_transcription,
+        ),
+        debug_mode=_read_bool(
+            raw_config,
+            "debug_mode",
+            AppConfig.debug_mode,
         ),
     )
 

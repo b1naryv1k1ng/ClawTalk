@@ -5,11 +5,13 @@ import queue
 import threading
 from typing import Callable, Optional
 
+from clawtalk.tts.base import TTSBackend
+
 
 logger = logging.getLogger(__name__)
 
 
-class WindowsTTS:
+class WindowsTTS(TTSBackend):
     def __init__(self) -> None:
         self._queue: "queue.Queue[Optional[str]]" = queue.Queue()
         self._thread = threading.Thread(target=self._worker, daemon=True)
@@ -17,6 +19,10 @@ class WindowsTTS:
         self._on_error: Optional[Callable[[str], None]] = None
         self._on_complete: Optional[Callable[[], None]] = None
         self._lock = threading.Lock()
+
+    @property
+    def backend_name(self) -> str:
+        return "windows"
 
     def set_error_handler(self, handler: Callable[[str], None]) -> None:
         self._on_error = handler
