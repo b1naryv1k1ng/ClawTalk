@@ -21,7 +21,7 @@ class HotkeyBinding:
 class GlobalHotkeyManager:
     def __init__(
         self,
-        hotkey: str = "ctrl+space",
+        hotkey: str = "ctrl+shift+f9",
         on_press_start: Optional[Callable[[], None]] = None,
         on_release_stop: Optional[Callable[[], None]] = None,
         on_error: Optional[Callable[[str], None]] = None,
@@ -163,10 +163,11 @@ def parse_hotkey(hotkey: str) -> HotkeyBinding:
     trigger = parts[-1]
     modifiers = frozenset(parts[:-1])
     supported_modifiers = {"ctrl", "shift", "alt"}
+    supported_triggers = {"space", "f9"}
     if not modifiers.issubset(supported_modifiers):
         raise HotkeyError("Only ctrl, shift, and alt modifiers are supported.")
-    if trigger != "space":
-        raise HotkeyError("Only the space key is supported as the push-to-talk trigger.")
+    if trigger not in supported_triggers:
+        raise HotkeyError("Only the space key and F9 are supported as push-to-talk triggers.")
 
     return HotkeyBinding(modifiers=modifiers, trigger=trigger)
 
@@ -178,6 +179,7 @@ def normalize_pynput_key(key) -> str:  # type: ignore[no-untyped-def]
     key_string = str(key).lower()
     key_map = {
         "key.space": "space",
+        "key.f9": "f9",
         "key.ctrl": "ctrl",
         "key.ctrl_l": "ctrl",
         "key.ctrl_r": "ctrl",

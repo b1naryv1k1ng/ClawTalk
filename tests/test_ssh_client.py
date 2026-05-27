@@ -2,6 +2,7 @@ import unittest
 
 from clawtalk.openclaw.ssh_client import (
     build_openclaw_remote_command,
+    normalize_ssh_output,
     resolve_ssh_target,
 )
 
@@ -61,6 +62,10 @@ class OpenClawSSHClientTests(unittest.TestCase):
     def test_resolve_ssh_target_falls_back_to_user_and_host(self) -> None:
         target = resolve_ssh_target("", "openclaw", "eitri")
         self.assertEqual(target, "openclaw@eitri")
+
+    def test_normalize_ssh_output_preserves_utf8_smart_punctuation(self) -> None:
+        text = 'I’m Codex — “quoted text”\n'
+        self.assertEqual(normalize_ssh_output(text), 'I’m Codex — “quoted text”')
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ ClawTalk is a Windows desktop MVP for talking to an OpenClaw agent from a simple
 - Phase 1 implemented: text input, SSH request to OpenClaw, visible reply, TTS playback, and timestamped conversation log.
 - Phase 3 implemented: local WAV recording with a button and global push-to-talk hotkey.
 - Phase 4 implemented: transcribe the most recent recording into the manual message box for review and editing.
+- Phase 5 implemented: optional auto-transcribe and optional auto-send voice loop after recording.
 
 ## Why `tkinter`
 
@@ -75,7 +76,7 @@ Default values:
 - `ssh_user = "openclaw"`
 - `openclaw_agent = "main"`
 - `openclaw_command_template = "openclaw agent --agent {agent} --message {message}"`
-- `push_to_talk_hotkey = "ctrl+space"`
+- `push_to_talk_hotkey = "ctrl+shift+f9"`
 - `recordings_directory = ""`
 - `input_device_index` omitted uses the system default microphone
 - `stt_backend = "faster_whisper"`
@@ -83,6 +84,7 @@ Default values:
 - `whisper_device = "auto"`
 - `whisper_compute_type = "auto"`
 - `auto_transcribe_after_recording = false`
+- `auto_send_after_transcription = false`
 
 ### Configure SSH Access to Eitri / OpenClaw
 
@@ -171,7 +173,7 @@ python -m clawtalk.stt_test path\to\recording.wav
 ## Phase 3 Push-To-Talk Shell
 
 - `Start Recording` button toggles microphone capture for local testing
-- Global push-to-talk hotkey defaults to `Ctrl+Space`
+- Global push-to-talk hotkey defaults to `Ctrl+Shift+F9`
 - Holding the hotkey starts recording and releasing it stops recording
 - Recordings are saved as `.wav` files in the system temp directory by default
 - Recording diagnostics are logged with input device, duration, file path, file size, peak amplitude, and RMS level
@@ -184,9 +186,16 @@ python -m clawtalk.stt_test path\to\recording.wav
 - Transcription runs in a background worker so the UI stays responsive
 - Recorded WAV files can stay at 48000 Hz; the STT backend handles the file as-is
 
+## Phase 5 Voice Loop
+
+- Optional `Auto-transcribe after recording` checkbox
+- Optional `Auto-send after transcription` checkbox
+- Auto-send only runs after a successful transcription
+- Silent recordings and empty transcripts are not auto-sent
+- The app logs before auto-send so the behavior stays visible
+
 ## What Is Still TODO
 
-- Automatic voice loop from push-to-talk through transcript to OpenClaw send
 - Streaming or partial responses
 - Persistent conversation history
 - Tray behavior and packaging
@@ -196,7 +205,7 @@ python -m clawtalk.stt_test path\to\recording.wav
 - The app currently sends one request at a time.
 - SSH output is treated as a single final reply, not a streamed response.
 - TTS state is approximate in this MVP and does not yet track exact playback completion.
-- Recording and transcription are still manual steps. The app does not auto-send transcripts yet.
+- Auto-send should stay off until you trust the microphone level and transcription quality for your setup.
 - Config is file-based only and edited outside the app.
 - No installer or packaged `.exe` yet.
 
@@ -206,17 +215,30 @@ python -m clawtalk.stt_test path\to\recording.wav
 - If Windows default input is wrong, set `input_device_index` in `clawtalk.toml` to the desired device index.
 - Click `Start Recording` to begin a local WAV recording.
 - Click `Stop Recording` to save it.
-- Or hold `Ctrl+Space` anywhere on Windows to start recording and release it to stop.
+- Or hold `Ctrl+Shift+F9` anywhere on Windows to start recording and release it to stop.
 - Watch the conversation log for the saved file path, duration, file size, peak amplitude, and RMS level.
 - If you want a custom output folder, set `recordings_directory` in `clawtalk.toml`.
 
 ## Phase 4 Usage
 
-- Record audio with the button or `Ctrl+Space`.
+- Record audio with the button or `Ctrl+Shift+F9`.
 - Click `Transcribe Last Recording`.
 - Wait for the state to move through `Transcribing` and back to `Idle`.
 - Review and edit the transcript in the message box.
 - Click `Send` manually when you are ready.
+
+## Phase 5 Usage
+
+- Manual mode:
+  Leave both auto options off. Recording, transcription, and sending stay manual.
+- Auto-transcribe mode:
+  Enable `Auto-transcribe after recording`.
+  After each recording, ClawTalk transcribes into the message box but does not send.
+- Full auto-send voice loop:
+  Enable both `Auto-transcribe after recording` and `Auto-send after transcription`.
+  After recording, ClawTalk transcribes, sends the transcript to OpenClaw, displays the reply, and speaks it.
+- Recommendation:
+  Keep auto-send off until you trust your mic volume and transcript quality.
 
 ## Faster-Whisper Notes
 
@@ -245,6 +267,7 @@ python -m clawtalk.stt_test path\to\recording.wav
 - Verify the `openclaw` command exists on the remote host.
 - Verify the configured agent name is valid.
 - Check that your SSH key auth works without interactive prompts.
+- ClawTalk forces UTF-8 decoding for SSH output so smart punctuation should display correctly even on Windows systems with a non-UTF-8 default code page.
 
 ### TTS Fails
 
@@ -290,6 +313,14 @@ python -m clawtalk.stt_test path\to\recording.wav
 - Check Windows input volume and headset microphone gain.
 - Review the recording diagnostics in the conversation log for `peak=` and `rms=` values.
 - 48000 Hz WAVs are expected and do not need to be manually converted before transcription.
+
+### Auto-Send Did Not Trigger
+
+- Auto-send only works when `Auto-transcribe after recording` is enabled.
+- Silent recordings are not auto-sent.
+- Empty transcripts are not auto-sent.
+- If transcription fails, nothing is sent.
+- Check the conversation log for `Auto-send enabled` or `Auto-send skipped` messages.
 
 ### Push-To-Talk Hotkey Fails
 

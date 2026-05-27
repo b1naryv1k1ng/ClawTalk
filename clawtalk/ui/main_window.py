@@ -33,8 +33,8 @@ class MainWindow:
         configure_logging()
         self.root = tk.Tk()
         self.root.title("ClawTalk")
-        self.root.geometry("980x800")
-        self.root.minsize(820, 640)
+        self.root.geometry("980x820")
+        self.root.minsize(840, 660)
 
         self._events: "queue.Queue[UIEvent]" = queue.Queue()
         self._worker: Optional[threading.Thread] = None
@@ -54,11 +54,15 @@ class MainWindow:
         self.connection_var = tk.StringVar(value="Loading")
         self.state_var = tk.StringVar(value="Starting")
         self.mute_tts_var = tk.BooleanVar(value=False)
+        self.auto_transcribe_var = tk.BooleanVar(value=False)
+        self.auto_send_var = tk.BooleanVar(value=False)
         self.tts_indicator_var = tk.StringVar(value="TTS: Unknown")
         self.recording_indicator_var = tk.StringVar(value="Mic: Loading")
 
         self._build_layout()
         self.mute_tts_var.trace_add("write", self._on_mute_changed)
+        self.auto_transcribe_var.trace_add("write", self._on_auto_transcribe_changed)
+        self.auto_send_var.trace_add("write", self._on_auto_send_changed)
         self._load_dependencies()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.after(100, self._drain_events)
@@ -110,21 +114,34 @@ class MainWindow:
 
         actions = ttk.Frame(input_frame)
         actions.grid(row=1, column=0, sticky="ew", pady=(8, 0))
-        actions.columnconfigure(4, weight=1)
+        actions.columnconfigure(6, weight=1)
 
         self.mute_checkbox = ttk.Checkbutton(
             actions, text="Mute TTS", variable=self.mute_tts_var
         )
         self.mute_checkbox.grid(row=0, column=0, sticky="w")
 
-        ttk.Label(actions, text="Ctrl+Enter sends").grid(
-            row=0, column=1, sticky="w", padx=(12, 0)
+        self.auto_transcribe_checkbox = ttk.Checkbutton(
+            actions,
+            text="Auto-transcribe after recording",
+            variable=self.auto_transcribe_var,
         )
+        self.auto_transcribe_checkbox.grid(row=0, column=1, sticky="w", padx=(12, 0))
+
+        self.auto_send_checkbox = ttk.Checkbutton(
+            actions,
+            text="Auto-send after transcription",
+            variable=self.auto_send_var,
+        )
+        self.auto_send_checkbox.grid(row=0, column=2, sticky="w", padx=(12, 0))
+
+        ttk.Label(actions, text="Ctrl+Enter sends").grid(
+            row=0, column=3, sticky="w", padx=(12, 0))
 
         self.record_button = ttk.Button(
             actions, text="Start Recording", command=self._toggle_recording
         )
-        self.record_button.grid(row=0, column=2, sticky="w", padx=(12, 0))
+        self.record_button.grid(row=0, column=4, sticky="w", padx=(12, 0))
 
         self.transcribe_button = ttk.Button(
             actions,
@@ -132,10 +149,10 @@ class MainWindow:
             command=self._transcribe_last_recording,
             state=tk.DISABLED,
         )
-        self.transcribe_button.grid(row=0, column=3, sticky="w", padx=(12, 0))
+        self.transcribe_button.grid(row=0, column=5, sticky="w", padx=(12, 0))
 
         self.send_button = ttk.Button(actions, text="Send", command=self._send_message)
-        self.send_button.grid(row=0, column=5, sticky="e")
+        self.send_button.grid(row=0, column=7, sticky="e")
 
         transcript_frame = ttk.LabelFrame(container, text="Last User Message", padding=10)
         transcript_frame.grid(row=3, column=0, sticky="nsew", pady=(12, 0))
@@ -201,6 +218,8 @@ class MainWindow:
             return
 
         self.mute_tts_var.set(self._config.mute_tts)
+        self.auto_transcribe_var.set(self._config.auto_transcribe_after_recording)
+        self.auto_send_var.set(self._config.auto_send_after_transcription)
         ssh_target = resolve_ssh_target(
             ssh_target=self._config.ssh_target,
             ssh_user=self._config.ssh_user,
@@ -216,6 +235,7 @@ class MainWindow:
         )
         self._initialize_recording_status()
         self._initialize_hotkey()
+        self._sync_auto_send_checkbox()
 
     def _initialize_recording_status(self) -> None:
         if self._recorder is None or self._config is None:
@@ -266,14 +286,12 @@ class MainWindow:
     def _send_message(self) -> None:
         if self._worker is not None and self._worker.is_alive():
             return
-
         if self._recording_mode in {"starting", "recording", "processing"}:
             self._append_log("SYSTEM", "Finish the current recording before sending.")
             return
         if self._transcription_mode == "transcribing":
             self._append_log("SYSTEM", "Wait for the current transcription to finish.")
             return
-
         if self._client is None:
             self._append_log("SYSTEM", "Cannot send message until config loads successfully.")
             self._set_state("Error")
@@ -285,10 +303,12 @@ class MainWindow:
             self._append_log("SYSTEM", "Please enter a message before sending.")
             return
 
+        self._send_text_message(message)
+
+    def _send_text_message(self, message: str) -> None:
         self._show_text(self.user_message_display, message)
         self._append_log("YOU", message)
         self._set_state("Sending")
-
         self._worker = threading.Thread(
             target=self._send_message_worker, args=(message,), daemon=True
         )
@@ -357,7 +377,6 @@ class MainWindow:
         self._recording_mode = "starting"
         self._pending_stop_request = False
         self._set_state("Recording")
-
         threading.Thread(
             target=self._start_recording_worker, args=(source,), daemon=True
         ).start()
@@ -381,7 +400,6 @@ class MainWindow:
                 ("recording_error", source, f"start|Unexpected recorder error: {exc}")
             )
             return
-
         self._events.put(("recording_started", source, session.device_name))
 
     def _request_stop_recording(self, source: str) -> None:
@@ -390,7 +408,6 @@ class MainWindow:
             return
         if self._recording_mode != "recording":
             return
-
         self._recording_mode = "processing"
         self._set_state("Processing")
         threading.Thread(
@@ -412,10 +429,12 @@ class MainWindow:
                 ("recording_error", source, f"stop|Unexpected recorder error: {exc}")
             )
             return
-
         self._events.put(("recording_saved", source, result))
 
     def _transcribe_last_recording(self) -> None:
+        self._begin_transcription(auto_triggered=False)
+
+    def _begin_transcription(self, auto_triggered: bool) -> None:
         if self._transcription_mode == "transcribing":
             return
         if self._last_recording_result is None:
@@ -430,16 +449,21 @@ class MainWindow:
 
         self._transcription_mode = "transcribing"
         self._set_state("Transcribing")
-        threading.Thread(target=self._transcribe_last_recording_worker, daemon=True).start()
+        threading.Thread(
+            target=self._transcribe_last_recording_worker,
+            args=(auto_triggered,),
+            daemon=True,
+        ).start()
 
-    def _transcribe_last_recording_worker(self) -> None:
+    def _transcribe_last_recording_worker(self, auto_triggered: bool) -> None:
         try:
             assert self._last_recording_result is not None
             assert self._stt_backend is not None
             logger.info(
-                "Starting transcription worker. path=%s backend=%s",
+                "Starting transcription worker. path=%s backend=%s auto_triggered=%s",
                 self._last_recording_result.file_path,
                 self._config.stt_backend if self._config is not None else "unknown",
+                auto_triggered,
             )
             result = self._stt_backend.transcribe(str(self._last_recording_result.file_path))
         except STTError as exc:
@@ -451,7 +475,7 @@ class MainWindow:
             self._events.put(("transcription_error", f"Unexpected transcription error: {exc}", ""))
             return
 
-        self._events.put(("transcription_complete", result, ""))
+        self._events.put(("transcription_complete", result, auto_triggered))
 
     def _drain_events(self) -> None:
         while True:
@@ -484,7 +508,7 @@ class MainWindow:
                 self._append_log("HOTKEY ERROR", first)
                 self._show_text(self.reply_display, first)
             elif event_type == "transcription_complete":
-                self._handle_transcription_complete(first)
+                self._handle_transcription_complete(first, bool(second))
             elif event_type == "transcription_error":
                 self._handle_transcription_error(first)
 
@@ -531,8 +555,9 @@ class MainWindow:
                 self.reply_display,
                 "Recording saved, but it appears silent. Check the selected input device.",
             )
-        if self._config is not None and self._config.auto_transcribe_after_recording:
-            self._transcribe_last_recording()
+        if should_auto_transcribe_recording(self.auto_transcribe_var.get(), result):
+            self._append_log("SYSTEM", "Auto-transcribe enabled; transcribing last recording.")
+            self._begin_transcription(auto_triggered=True)
 
     def _handle_recording_error(self, source: str, error_message: str) -> None:
         self._recording_mode = "idle"
@@ -555,7 +580,7 @@ class MainWindow:
         self._append_log("RECORDER ERROR", f"{source}: {display_message}")
         self._set_state("Error")
 
-    def _handle_transcription_complete(self, result: STTResult) -> None:
+    def _handle_transcription_complete(self, result: STTResult, auto_triggered: bool) -> None:
         self._transcription_mode = "idle"
         if result.transcript_text:
             self._set_message_input(result.transcript_text)
@@ -565,12 +590,25 @@ class MainWindow:
                 "Transcription completed, but no speech was detected.",
             )
 
-        self._append_log(
-            "STT",
-            format_transcription_summary(result),
-        )
+        self._append_log("STT", format_transcription_summary(result))
         if result.diagnostics:
             self._append_log("STT", " | ".join(result.diagnostics))
+
+        auto_send, reason = should_auto_send_transcript(
+            self.auto_send_var.get(),
+            self._last_recording_result,
+            result,
+        )
+        if auto_triggered and auto_send:
+            self._append_log("SYSTEM", "Auto-send enabled; sending transcript to OpenClaw.")
+            self._set_state("Idle")
+            self._send_text_message(result.transcript_text.strip())
+            return
+        if auto_triggered and self.auto_send_var.get() and reason:
+            self._append_log("SYSTEM", f"Auto-send skipped: {reason}")
+            if not result.transcript_text.strip():
+                self._show_text(self.reply_display, "Transcript was empty, so nothing was sent.")
+
         self._set_state("Idle")
 
     def _handle_transcription_error(self, error_message: str) -> None:
@@ -606,6 +644,21 @@ class MainWindow:
 
     def _on_mute_changed(self, *_args: object) -> None:
         self._update_tts_indicator()
+
+    def _on_auto_transcribe_changed(self, *_args: object) -> None:
+        self._sync_auto_send_checkbox()
+
+    def _on_auto_send_changed(self, *_args: object) -> None:
+        if self.auto_send_var.get() and not self.auto_transcribe_var.get():
+            self.auto_transcribe_var.set(True)
+        self._sync_auto_send_checkbox()
+
+    def _sync_auto_send_checkbox(self) -> None:
+        if not self.auto_transcribe_var.get():
+            self.auto_send_var.set(False)
+            self.auto_send_checkbox.configure(state=tk.DISABLED)
+        else:
+            self.auto_send_checkbox.configure(state=tk.NORMAL)
 
     def _update_tts_indicator(self) -> None:
         self.tts_indicator_var.set("TTS: Muted" if self.mute_tts_var.get() else "TTS: Ready")
@@ -676,3 +729,25 @@ def format_transcription_summary(result: STTResult) -> str:
         f"device={result.device} | "
         f"compute_type={result.compute_type}"
     )
+
+
+def should_auto_transcribe_recording(
+    auto_transcribe_enabled: bool, recording_result: Optional[RecordingResult]
+) -> bool:
+    return auto_transcribe_enabled and recording_result is not None
+
+
+def should_auto_send_transcript(
+    auto_send_enabled: bool,
+    recording_result: Optional[RecordingResult],
+    transcription_result: STTResult,
+) -> Tuple[bool, str]:
+    if not auto_send_enabled:
+        return False, "Auto-send is disabled."
+    if recording_result is None:
+        return False, "No recording is available."
+    if recording_result.stats.appears_silent:
+        return False, "Recording appears silent."
+    if not transcription_result.transcript_text.strip():
+        return False, "Transcript was empty."
+    return True, ""

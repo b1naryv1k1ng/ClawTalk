@@ -24,7 +24,7 @@ class AppConfig:
         "openclaw agent --agent {agent} --message {message}"
     )
     mute_tts: bool = False
-    push_to_talk_hotkey: str = "ctrl+space"
+    push_to_talk_hotkey: str = "ctrl+shift+f9"
     recordings_directory: str = ""
     input_device_index: Optional[int] = None
     stt_backend: str = "faster_whisper"
@@ -32,6 +32,7 @@ class AppConfig:
     whisper_device: str = "auto"
     whisper_compute_type: str = "auto"
     auto_transcribe_after_recording: bool = False
+    auto_send_after_transcription: bool = False
 
 
 class ConfigError(Exception):
@@ -89,6 +90,11 @@ def load_config(config_path: Path = DEFAULT_CONFIG_PATH) -> AppConfig:
             raw_config,
             "auto_transcribe_after_recording",
             AppConfig.auto_transcribe_after_recording,
+        ),
+        auto_send_after_transcription=_read_bool(
+            raw_config,
+            "auto_send_after_transcription",
+            AppConfig.auto_send_after_transcription,
         ),
     )
 

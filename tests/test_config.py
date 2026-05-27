@@ -14,6 +14,8 @@ whisper_model_size = "tiny"
 whisper_device = "cpu"
 whisper_compute_type = "int8"
 auto_transcribe_after_recording = true
+auto_send_after_transcription = true
+push_to_talk_hotkey = "ctrl+shift+f9"
 input_device_index = 33
 """
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -26,6 +28,8 @@ input_device_index = 33
         self.assertEqual(config.whisper_device, "cpu")
         self.assertEqual(config.whisper_compute_type, "int8")
         self.assertTrue(config.auto_transcribe_after_recording)
+        self.assertTrue(config.auto_send_after_transcription)
+        self.assertEqual(config.push_to_talk_hotkey, "ctrl+shift+f9")
         self.assertEqual(config.input_device_index, 33)
 
 

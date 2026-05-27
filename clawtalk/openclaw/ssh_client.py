@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import logging
 import shlex
 import subprocess
 from typing import Optional
 
 from clawtalk.config import AppConfig
 from clawtalk.openclaw.base import OpenClawClient
+
+
+logger = logging.getLogger(__name__)
 
 
 class OpenClawError(Exception):
@@ -37,6 +41,8 @@ class OpenClawSSHClient(OpenClawClient):
                 ["ssh", ssh_target, remote_command],
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 check=False,
             )
         except FileNotFoundError as exc:
@@ -46,8 +52,14 @@ class OpenClawSSHClient(OpenClawClient):
         except OSError as exc:
             raise OpenClawError(f"Could not run SSH command: {exc}") from exc
 
-        stdout = completed.stdout.strip()
-        stderr = completed.stderr.strip()
+        stdout = normalize_ssh_output(completed.stdout)
+        stderr = normalize_ssh_output(completed.stderr)
+        logger.debug(
+            "SSH completed. returncode=%s stdout_length=%s stderr_length=%s",
+            completed.returncode,
+            len(stdout),
+            len(stderr),
+        )
 
         if completed.returncode != 0:
             details = stderr or stdout or f"SSH exited with code {completed.returncode}."
@@ -84,3 +96,7 @@ def resolve_ssh_target(
     raise OpenClawError(
         "SSH target is not configured. Set ssh_target or ssh_host in clawtalk.toml."
     )
+
+
+def normalize_ssh_output(value: str) -> str:
+    return value.strip()

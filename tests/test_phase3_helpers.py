@@ -31,10 +31,10 @@ class FakeAudioRecorder(AudioRecorder):
 
 
 class Phase3HelpersTests(unittest.TestCase):
-    def test_parse_hotkey_accepts_ctrl_space(self) -> None:
-        binding = parse_hotkey("ctrl+space")
-        self.assertEqual(binding.modifiers, frozenset({"ctrl"}))
-        self.assertEqual(binding.trigger, "space")
+    def test_parse_hotkey_accepts_ctrl_shift_f9(self) -> None:
+        binding = parse_hotkey("ctrl+shift+f9")
+        self.assertEqual(binding.modifiers, frozenset({"ctrl", "shift"}))
+        self.assertEqual(binding.trigger, "f9")
 
     def test_parse_hotkey_rejects_unsupported_trigger(self) -> None:
         with self.assertRaises(HotkeyError):
@@ -123,29 +123,33 @@ class Phase3HelpersTests(unittest.TestCase):
         starts = []
         stops = []
         manager = GlobalHotkeyManager(
+            hotkey="ctrl+shift+f9",
             on_press_start=lambda: starts.append("start"),
             on_release_stop=lambda: stops.append("stop"),
         )
 
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
-        manager._handle_press("Key.space")
-        manager._handle_release("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
+        manager._handle_press("Key.f9")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
         manager._handle_release("Key.ctrl_l")
 
         self.assertEqual(starts, ["start"])
         self.assertEqual(stops, ["stop"])
 
-    def test_hotkey_space_press_release_alone_does_not_start_or_stop(self) -> None:
+    def test_hotkey_f9_press_release_alone_does_not_start_or_stop(self) -> None:
         starts = []
         stops = []
         manager = GlobalHotkeyManager(
+            hotkey="ctrl+shift+f9",
             on_press_start=lambda: starts.append("start"),
             on_release_stop=lambda: stops.append("stop"),
         )
 
-        manager._handle_press("Key.space")
-        manager._handle_release("Key.space")
+        manager._handle_press("Key.f9")
+        manager._handle_release("Key.f9")
 
         self.assertEqual(starts, [])
         self.assertEqual(stops, [])
@@ -154,6 +158,7 @@ class Phase3HelpersTests(unittest.TestCase):
         starts = []
         stops = []
         manager = GlobalHotkeyManager(
+            hotkey="ctrl+shift+f9",
             on_press_start=lambda: starts.append("start"),
             on_release_stop=lambda: stops.append("stop"),
         )
@@ -168,17 +173,22 @@ class Phase3HelpersTests(unittest.TestCase):
         starts = []
         stops = []
         manager = GlobalHotkeyManager(
+            hotkey="ctrl+shift+f9",
             on_press_start=lambda: starts.append("start"),
             on_release_stop=lambda: stops.append("stop"),
         )
 
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
-        manager._handle_release("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
         manager._handle_release("Key.ctrl_l")
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
-        manager._handle_release("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
         manager._handle_release("Key.ctrl_l")
 
         self.assertEqual(starts, ["start", "start"])
@@ -188,13 +198,16 @@ class Phase3HelpersTests(unittest.TestCase):
         starts = []
         stops = []
         manager = GlobalHotkeyManager(
+            hotkey="ctrl+shift+f9",
             on_press_start=lambda: starts.append("start"),
             on_release_stop=lambda: stops.append("stop"),
         )
 
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
-        manager._handle_release("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
         manager._handle_release("Key.ctrl_l")
 
         self.assertEqual(starts, ["start"])
@@ -204,14 +217,17 @@ class Phase3HelpersTests(unittest.TestCase):
         starts = []
         stops = []
         manager = GlobalHotkeyManager(
+            hotkey="ctrl+shift+f9",
             on_press_start=lambda: starts.append("start"),
             on_release_stop=lambda: stops.append("stop"),
         )
 
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
         manager._handle_release("Key.ctrl_l")
-        manager._handle_release("Key.space")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
 
         self.assertEqual(starts, ["start"])
         self.assertEqual(stops, ["stop"])
@@ -220,19 +236,24 @@ class Phase3HelpersTests(unittest.TestCase):
         starts = []
         stops = []
         manager = GlobalHotkeyManager(
+            hotkey="ctrl+shift+f9",
             on_press_start=lambda: starts.append("start"),
             on_release_stop=lambda: stops.append("stop"),
         )
 
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
         manager.notify_recording_start_failed()
-        manager._handle_press("Key.space")
-        manager._handle_release("Key.space")
+        manager._handle_press("Key.f9")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
         manager._handle_release("Key.ctrl_l")
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
-        manager._handle_release("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
         manager._handle_release("Key.ctrl_l")
 
         self.assertEqual(starts, ["start", "start"])
@@ -242,18 +263,23 @@ class Phase3HelpersTests(unittest.TestCase):
         starts = []
         stops = []
         manager = GlobalHotkeyManager(
+            hotkey="ctrl+shift+f9",
             on_press_start=lambda: starts.append("start"),
             on_release_stop=lambda: stops.append("stop"),
         )
 
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
         manager.notify_recording_stop_failed()
-        manager._handle_release("Key.space")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
         manager._handle_release("Key.ctrl_l")
         manager._handle_press("Key.ctrl_l")
-        manager._handle_press("Key.space")
-        manager._handle_release("Key.space")
+        manager._handle_press("Key.shift_l")
+        manager._handle_press("Key.f9")
+        manager._handle_release("Key.f9")
+        manager._handle_release("Key.shift_l")
         manager._handle_release("Key.ctrl_l")
 
         self.assertEqual(starts, ["start", "start"])
