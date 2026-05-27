@@ -5,3 +5,4 @@ clawtalk.toml
 logs/
 recordings/
 *.wav
+*.log
