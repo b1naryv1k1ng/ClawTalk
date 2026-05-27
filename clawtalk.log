@@ -1,0 +1,180 @@
+2026-05-27 11:31:39,940 INFO clawtalk.ui.main_window: Audio input device: [0] Microsoft Sound Mapper - Input | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,941 INFO clawtalk.ui.main_window: Audio input device: [1] Headset Microphone (Logitech G5 [default] | input_channels=1 | default_sample_rate=44100
+2026-05-27 11:31:39,941 INFO clawtalk.ui.main_window: Audio input device: [2] Microphone (Steam Streaming Mic | input_channels=8 | default_sample_rate=44100
+2026-05-27 11:31:39,941 INFO clawtalk.ui.main_window: Audio input device: [3] Microphone (HD Pro Webcam C920) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,941 INFO clawtalk.ui.main_window: Audio input device: [4] Microphone (Virtual Desktop Aud | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [5] Headset Microphone (Oculus Virt | input_channels=1 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [6] VoiceMeeter Output (VB-Audio Vo | input_channels=8 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [7] Line (FaceRig Virtual Audio Dri | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [8] Microphone (DroidCam Virtual Au | input_channels=1 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [13] Primary Sound Capture Driver | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [14] Headset Microphone (Logitech G535 Gaming Headset) | input_channels=1 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [15] Microphone (Steam Streaming Microphone) | input_channels=8 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [16] Microphone (HD Pro Webcam C920) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,943 INFO clawtalk.ui.main_window: Audio input device: [17] Microphone (Virtual Desktop Audio) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,944 INFO clawtalk.ui.main_window: Audio input device: [18] Headset Microphone (Oculus Virtual Audio Device) | input_channels=1 | default_sample_rate=44100
+2026-05-27 11:31:39,944 INFO clawtalk.ui.main_window: Audio input device: [19] VoiceMeeter Output (VB-Audio VoiceMeeter VAIO) | input_channels=8 | default_sample_rate=44100
+2026-05-27 11:31:39,944 INFO clawtalk.ui.main_window: Audio input device: [20] Line (FaceRig Virtual Audio Driver) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,944 INFO clawtalk.ui.main_window: Audio input device: [21] Microphone (DroidCam Virtual Audio) | input_channels=1 | default_sample_rate=44100
+2026-05-27 11:31:39,944 INFO clawtalk.ui.main_window: Audio input device: [29] Microphone (Steam Streaming Microphone) | input_channels=1 | default_sample_rate=44100
+2026-05-27 11:31:39,944 INFO clawtalk.ui.main_window: Audio input device: [30] Microphone (HD Pro Webcam C920) | input_channels=2 | default_sample_rate=16000
+2026-05-27 11:31:39,944 INFO clawtalk.ui.main_window: Audio input device: [31] Microphone (Virtual Desktop Audio) | input_channels=1 | default_sample_rate=44100
+2026-05-27 11:31:39,945 INFO clawtalk.ui.main_window: Audio input device: [32] Headset Microphone (Oculus Virtual Audio Device) | input_channels=1 | default_sample_rate=48000
+2026-05-27 11:31:39,945 INFO clawtalk.ui.main_window: Audio input device: [33] Headset Microphone (Logitech G535 Gaming Headset) | input_channels=1 | default_sample_rate=48000
+2026-05-27 11:31:39,945 INFO clawtalk.ui.main_window: Audio input device: [34] VoiceMeeter Output (VB-Audio VoiceMeeter VAIO) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,946 INFO clawtalk.ui.main_window: Audio input device: [35] Line (FaceRig Virtual Audio Driver) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,946 INFO clawtalk.ui.main_window: Audio input device: [36] Microphone (DroidCam Virtual Audio) | input_channels=1 | default_sample_rate=16000
+2026-05-27 11:31:39,946 INFO clawtalk.ui.main_window: Audio input device: [37] MIDI (DroidCam Audio) | input_channels=1 | default_sample_rate=16000
+2026-05-27 11:31:39,946 INFO clawtalk.ui.main_window: Audio input device: [41] Input (OCULUSVAD Wave Speaker Headphone) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,946 INFO clawtalk.ui.main_window: Audio input device: [42] Headset Microphone (OCULUSVAD Wave Microphone Headphone) | input_channels=1 | default_sample_rate=48000
+2026-05-27 11:31:39,946 INFO clawtalk.ui.main_window: Audio input device: [43] Stereo Mix (Realtek HD Audio Stereo input) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,946 INFO clawtalk.ui.main_window: Audio input device: [44] Line In (Realtek HD Audio Line input) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,947 INFO clawtalk.ui.main_window: Audio input device: [46] Microphone (Realtek HD Audio Mic input) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,947 INFO clawtalk.ui.main_window: Audio input device: [47] Microphone (VDVAD Wave) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:39,947 INFO clawtalk.ui.main_window: Audio input device: [49] Microphone (Steam Streaming Microphone Wave) | input_channels=8 | default_sample_rate=44100
+2026-05-27 11:31:39,947 INFO clawtalk.ui.main_window: Audio input device: [53] Input (7.1 Surround Sound Wave Speaker Headphone) | input_channels=8 | default_sample_rate=44100
+2026-05-27 11:31:39,947 INFO clawtalk.ui.main_window: Audio input device: [54] Headset Microphone (G535 Wireless Gaming Headset) | input_channels=1 | default_sample_rate=48000
+2026-05-27 11:31:39,947 INFO clawtalk.ui.main_window: Audio input device: [56] Microphone (HD Pro Webcam C920) | input_channels=2 | default_sample_rate=32000
+2026-05-27 11:31:39,947 INFO clawtalk.ui.main_window: Audio input device: [57] VoiceMeeter Output (VoiceMeeter vaio) | input_channels=8 | default_sample_rate=44100
+2026-05-27 11:31:39,947 INFO clawtalk.ui.main_window: Audio input device: [59] Input (Steam Streaming Speakers Wave) | input_channels=8 | default_sample_rate=44100
+2026-05-27 11:31:39,948 INFO clawtalk.ui.main_window: Audio input device: [64] Input (Larmkanal) | input_channels=2 | default_sample_rate=44100
+2026-05-27 11:31:40,080 INFO clawtalk.hotkey: Global hotkey started: ctrl+shift+f9
+2026-05-27 11:31:50,295 INFO clawtalk.hotkey: Global hotkey pressed: ctrl+shift+f9
+2026-05-27 11:31:50,297 INFO clawtalk.ui.main_window: Recording start requested. source=hotkey mode=idle recorder_busy=False input_device_index=33
+2026-05-27 11:31:50,298 INFO clawtalk.ui.main_window: Starting recorder worker. source=hotkey input_device_index=33
+2026-05-27 11:31:50,299 WARNING clawtalk.recorder: Requested sample rate not supported. device_index=33 requested_rate=16000 fallback_rate=48000 error=Invalid sample rate [PaErrorCode -9997]
+2026-05-27 11:31:50,300 INFO clawtalk.recorder: Using fallback sample rate for device. device_index=33 sample_rate=48000
+2026-05-27 11:31:50,333 INFO clawtalk.recorder: Recording started. device_index=33 device_name=Headset Microphone (Logitech G535 Gaming Headset) sample_rate=48000 channels=1
+2026-05-27 11:31:51,724 INFO clawtalk.hotkey: Global hotkey released: ctrl+shift+f9
+2026-05-27 11:31:51,803 INFO clawtalk.ui.main_window: Stopping recorder worker. source=hotkey
+2026-05-27 11:31:51,816 INFO clawtalk.recorder: Recording saved. path=C:\Users\MOBri\AppData\Local\Temp\clawtalk-recordings\clawtalk-recording-20260527-113150-333258-c2fe4953.wav duration=1.48s size=140204 peak=9061 rms=826 silent=False
+2026-05-27 11:31:51,921 INFO clawtalk.ui.main_window: Starting transcription worker. path=C:\Users\MOBri\AppData\Local\Temp\clawtalk-recordings\clawtalk-recording-20260527-113150-333258-c2fe4953.wav backend=faster_whisper auto_triggered=True
+2026-05-27 11:31:52,272 INFO clawtalk.stt.faster_whisper_backend: Loading faster-whisper model. model=base device=cuda compute_type=float16
+2026-05-27 11:31:53,080 INFO httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-05-27 11:31:53,511 INFO clawtalk.stt.faster_whisper_backend: Loaded faster-whisper model in 1.59s
+2026-05-27 11:31:53,554 INFO faster_whisper: Processing audio with duration 00:01.460
+2026-05-27 11:31:53,623 INFO faster_whisper: VAD filter removed 00:00.016 of audio
+2026-05-27 11:31:53,903 INFO faster_whisper: Detected language 'en' with probability 0.94
+2026-05-27 11:31:53,992 INFO clawtalk.stt.faster_whisper_backend: Transcription completed. backend=faster_whisper model=base device=cuda compute_type=float16 duration=1.46s transcription_time=0.48s
+2026-05-27 11:32:31,960 INFO clawtalk.openclaw.ssh_client: SSH timing. start=1206761.028553 end=1206798.943800 duration=37.915s returncode=0 stdout_length=242 stderr_length=0
+2026-05-27 11:32:31,982 INFO clawtalk.ui.main_window: TTS request queued from UI. text_length=242
+2026-05-27 11:32:31,984 INFO clawtalk.tts.windows_tts: TTS request queued. text_length=242
+2026-05-27 11:32:31,984 INFO clawtalk.ui.main_window: Voice interaction timing. ssh=37.915s stt=0.480s stop_to_reply=40.065s stop_to_tts=40.067s returncode=0 stdout_length=242 stderr_length=0
+2026-05-27 11:32:31,984 INFO clawtalk.tts.windows_tts: TTS playback started. text_length=242
+2026-05-27 11:32:32,034 INFO comtypes.client._code_cache: Imported existing <module 'comtypes.gen' from 'E:\\Codex Projects\\ClawTalk\\.venv\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2026-05-27 11:32:32,034 INFO comtypes.client._code_cache: Using writeable comtypes cache directory: 'E:\Codex Projects\ClawTalk\.venv\Lib\site-packages\comtypes\gen'
+2026-05-27 11:32:49,942 INFO clawtalk.tts.windows_tts: TTS playback completed. text_length=242
+2026-05-27 11:33:30,997 INFO clawtalk.hotkey: Global hotkey pressed: ctrl+shift+f9
+2026-05-27 11:33:31,068 INFO clawtalk.ui.main_window: Recording start requested. source=hotkey mode=idle recorder_busy=False input_device_index=33
+2026-05-27 11:33:31,069 INFO clawtalk.ui.main_window: Starting recorder worker. source=hotkey input_device_index=33
+2026-05-27 11:33:31,071 WARNING clawtalk.recorder: Requested sample rate not supported. device_index=33 requested_rate=16000 fallback_rate=48000 error=Invalid sample rate [PaErrorCode -9997]
+2026-05-27 11:33:31,071 INFO clawtalk.recorder: Using fallback sample rate for device. device_index=33 sample_rate=48000
+2026-05-27 11:33:31,087 INFO clawtalk.recorder: Recording started. device_index=33 device_name=Headset Microphone (Logitech G535 Gaming Headset) sample_rate=48000 channels=1
+2026-05-27 11:33:33,953 INFO clawtalk.hotkey: Global hotkey released: ctrl+shift+f9
+2026-05-27 11:33:33,983 INFO clawtalk.ui.main_window: Stopping recorder worker. source=hotkey
+2026-05-27 11:33:34,001 INFO clawtalk.recorder: Recording saved. path=C:\Users\MOBri\AppData\Local\Temp\clawtalk-recordings\clawtalk-recording-20260527-113331-087930-72fe4890.wav duration=2.91s size=276524 peak=7966 rms=665 silent=False
+2026-05-27 11:33:34,107 INFO clawtalk.ui.main_window: Starting transcription worker. path=C:\Users\MOBri\AppData\Local\Temp\clawtalk-recordings\clawtalk-recording-20260527-113331-087930-72fe4890.wav backend=faster_whisper auto_triggered=True
+2026-05-27 11:33:34,154 INFO faster_whisper: Processing audio with duration 00:02.880
+2026-05-27 11:33:34,160 INFO faster_whisper: VAD filter removed 00:00.080 of audio
+2026-05-27 11:33:34,410 INFO faster_whisper: Detected language 'en' with probability 1.00
+2026-05-27 11:33:34,503 INFO clawtalk.stt.faster_whisper_backend: Transcription completed. backend=faster_whisper model=base device=cuda compute_type=float16 duration=2.88s transcription_time=0.39s
+2026-05-27 11:33:47,091 INFO clawtalk.openclaw.ssh_client: SSH timing. start=1206861.546222 end=1206874.074852 duration=12.529s returncode=0 stdout_length=14 stderr_length=0
+2026-05-27 11:33:47,185 INFO clawtalk.ui.main_window: TTS request queued from UI. text_length=14
+2026-05-27 11:33:47,186 INFO clawtalk.tts.windows_tts: TTS request queued. text_length=14
+2026-05-27 11:33:47,186 INFO clawtalk.ui.main_window: Voice interaction timing. ssh=12.529s stt=0.395s stop_to_reply=13.093s stop_to_tts=13.094s returncode=0 stdout_length=14 stderr_length=0
+2026-05-27 11:33:47,186 INFO clawtalk.tts.windows_tts: TTS playback started. text_length=14
+2026-05-27 11:33:49,064 INFO clawtalk.tts.windows_tts: TTS playback completed. text_length=14
+2026-05-27 12:13:16,684 INFO clawtalk.hotkey: Global hotkey stopped.
+2026-05-27 12:13:16,684 INFO clawtalk.tts.windows_tts: Stopping TTS worker.
+2026-05-27 12:13:16,686 INFO clawtalk.tts.windows_tts: TTS worker received stop signal.
+2026-05-27 12:16:00,859 INFO clawtalk.ui.main_window: Audio input device: [0] Microsoft Sound Mapper - Input | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,859 INFO clawtalk.ui.main_window: Audio input device: [1] Headset Microphone (Logitech G5 [default] | input_channels=1 | default_sample_rate=44100
+2026-05-27 12:16:00,859 INFO clawtalk.ui.main_window: Audio input device: [2] Microphone (Steam Streaming Mic | input_channels=8 | default_sample_rate=44100
+2026-05-27 12:16:00,860 INFO clawtalk.ui.main_window: Audio input device: [3] Microphone (HD Pro Webcam C920) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,860 INFO clawtalk.ui.main_window: Audio input device: [4] Microphone (Virtual Desktop Aud | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,860 INFO clawtalk.ui.main_window: Audio input device: [5] Headset Microphone (Oculus Virt | input_channels=1 | default_sample_rate=44100
+2026-05-27 12:16:00,860 INFO clawtalk.ui.main_window: Audio input device: [6] VoiceMeeter Output (VB-Audio Vo | input_channels=8 | default_sample_rate=44100
+2026-05-27 12:16:00,860 INFO clawtalk.ui.main_window: Audio input device: [7] Line (FaceRig Virtual Audio Dri | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,860 INFO clawtalk.ui.main_window: Audio input device: [8] Microphone (DroidCam Virtual Au | input_channels=1 | default_sample_rate=44100
+2026-05-27 12:16:00,860 INFO clawtalk.ui.main_window: Audio input device: [13] Primary Sound Capture Driver | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [14] Headset Microphone (Logitech G535 Gaming Headset) | input_channels=1 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [15] Microphone (Steam Streaming Microphone) | input_channels=8 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [16] Microphone (HD Pro Webcam C920) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [17] Microphone (Virtual Desktop Audio) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [18] Headset Microphone (Oculus Virtual Audio Device) | input_channels=1 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [19] VoiceMeeter Output (VB-Audio VoiceMeeter VAIO) | input_channels=8 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [20] Line (FaceRig Virtual Audio Driver) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [21] Microphone (DroidCam Virtual Audio) | input_channels=1 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [29] Microphone (Steam Streaming Microphone) | input_channels=1 | default_sample_rate=44100
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [30] Microphone (HD Pro Webcam C920) | input_channels=2 | default_sample_rate=16000
+2026-05-27 12:16:00,861 INFO clawtalk.ui.main_window: Audio input device: [31] Microphone (Virtual Desktop Audio) | input_channels=1 | default_sample_rate=44100
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [32] Headset Microphone (Oculus Virtual Audio Device) | input_channels=1 | default_sample_rate=48000
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [33] Headset Microphone (Logitech G535 Gaming Headset) | input_channels=1 | default_sample_rate=48000
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [34] VoiceMeeter Output (VB-Audio VoiceMeeter VAIO) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [35] Line (FaceRig Virtual Audio Driver) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [36] Microphone (DroidCam Virtual Audio) | input_channels=1 | default_sample_rate=16000
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [37] MIDI (DroidCam Audio) | input_channels=1 | default_sample_rate=16000
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [41] Input (OCULUSVAD Wave Speaker Headphone) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [42] Headset Microphone (OCULUSVAD Wave Microphone Headphone) | input_channels=1 | default_sample_rate=48000
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [43] Stereo Mix (Realtek HD Audio Stereo input) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [44] Line In (Realtek HD Audio Line input) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,863 INFO clawtalk.ui.main_window: Audio input device: [46] Microphone (Realtek HD Audio Mic input) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,864 INFO clawtalk.ui.main_window: Audio input device: [47] Microphone (VDVAD Wave) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,864 INFO clawtalk.ui.main_window: Audio input device: [49] Microphone (Steam Streaming Microphone Wave) | input_channels=8 | default_sample_rate=44100
+2026-05-27 12:16:00,864 INFO clawtalk.ui.main_window: Audio input device: [53] Input (7.1 Surround Sound Wave Speaker Headphone) | input_channels=8 | default_sample_rate=44100
+2026-05-27 12:16:00,864 INFO clawtalk.ui.main_window: Audio input device: [54] Headset Microphone (G535 Wireless Gaming Headset) | input_channels=1 | default_sample_rate=48000
+2026-05-27 12:16:00,864 INFO clawtalk.ui.main_window: Audio input device: [56] Microphone (HD Pro Webcam C920) | input_channels=2 | default_sample_rate=32000
+2026-05-27 12:16:00,864 INFO clawtalk.ui.main_window: Audio input device: [57] VoiceMeeter Output (VoiceMeeter vaio) | input_channels=8 | default_sample_rate=44100
+2026-05-27 12:16:00,866 INFO clawtalk.ui.main_window: Audio input device: [59] Input (Steam Streaming Speakers Wave) | input_channels=8 | default_sample_rate=44100
+2026-05-27 12:16:00,866 INFO clawtalk.ui.main_window: Audio input device: [64] Input (Larmkanal) | input_channels=2 | default_sample_rate=44100
+2026-05-27 12:16:00,893 INFO clawtalk.hotkey: Global hotkey started: ctrl+shift+f9
+2026-05-27 12:16:14,106 INFO clawtalk.hotkey: Global hotkey pressed: ctrl+shift+f9
+2026-05-27 12:16:14,136 INFO clawtalk.ui.main_window: Recording start requested. source=hotkey mode=idle recorder_busy=False input_device_index=33
+2026-05-27 12:16:14,138 INFO clawtalk.ui.main_window: Starting recorder worker. source=hotkey input_device_index=33
+2026-05-27 12:16:14,138 WARNING clawtalk.recorder: Requested sample rate not supported. device_index=33 requested_rate=16000 fallback_rate=48000 error=Invalid sample rate [PaErrorCode -9997]
+2026-05-27 12:16:14,140 INFO clawtalk.recorder: Using fallback sample rate for device. device_index=33 sample_rate=48000
+2026-05-27 12:16:14,174 INFO clawtalk.recorder: Recording started. device_index=33 device_name=Headset Microphone (Logitech G535 Gaming Headset) sample_rate=48000 channels=1
+2026-05-27 12:16:17,172 INFO clawtalk.hotkey: Global hotkey released: ctrl+shift+f9
+2026-05-27 12:16:17,248 INFO clawtalk.ui.main_window: Stopping recorder worker. source=hotkey
+2026-05-27 12:16:17,260 INFO clawtalk.recorder: Recording saved. path=C:\Users\MOBri\AppData\Local\Temp\clawtalk-recordings\clawtalk-recording-20260527-121614-174309-58d56304.wav duration=3.08s size=293804 peak=5942 rms=479 silent=False
+2026-05-27 12:16:17,355 INFO clawtalk.ui.main_window: Starting transcription worker. path=C:\Users\MOBri\AppData\Local\Temp\clawtalk-recordings\clawtalk-recording-20260527-121614-174309-58d56304.wav backend=faster_whisper auto_triggered=True
+2026-05-27 12:16:17,661 INFO clawtalk.stt.faster_whisper_backend: Loading faster-whisper model. model=base device=cuda compute_type=float16
+2026-05-27 12:16:18,552 INFO httpx: HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-base/revision/main "HTTP/1.1 200 OK"
+2026-05-27 12:16:18,994 INFO clawtalk.stt.faster_whisper_backend: Loaded faster-whisper model in 1.64s
+2026-05-27 12:16:19,048 INFO faster_whisper: Processing audio with duration 00:03.060
+2026-05-27 12:16:19,128 INFO faster_whisper: VAD filter removed 00:00.368 of audio
+2026-05-27 12:16:19,432 INFO faster_whisper: Detected language 'en' with probability 1.00
+2026-05-27 12:16:19,544 INFO clawtalk.stt.faster_whisper_backend: Transcription completed. backend=faster_whisper model=base device=cuda compute_type=float16 duration=3.06s transcription_time=0.55s
+2026-05-27 12:16:19,652 INFO clawtalk.openclaw.gateway_client: Gateway request starting. url=http://127.0.0.1:18789/v1/chat/completions timeout_seconds=60 method=POST auth=Bearer <redacted>
+2026-05-27 12:16:25,470 INFO clawtalk.openclaw.gateway_client: Gateway request completed. url=http://127.0.0.1:18789/v1/chat/completions status=200 duration=5.818s response_length=307
+2026-05-27 12:16:25,573 INFO clawtalk.ui.main_window: TTS request queued from UI. text_length=14
+2026-05-27 12:16:25,574 INFO clawtalk.tts.windows_tts: TTS request queued. text_length=14
+2026-05-27 12:16:25,574 INFO clawtalk.ui.main_window: Voice interaction timing. transport=gateway duration=5.818s stt=0.549s stop_to_reply=8.220s stop_to_tts=8.222s returncode=200 output_length=307 error_length=0
+2026-05-27 12:16:25,574 INFO clawtalk.tts.windows_tts: TTS playback started. text_length=14
+2026-05-27 12:16:25,624 INFO comtypes.client._code_cache: Imported existing <module 'comtypes.gen' from 'E:\\Codex Projects\\ClawTalk\\.venv\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2026-05-27 12:16:25,625 INFO comtypes.client._code_cache: Using writeable comtypes cache directory: 'E:\Codex Projects\ClawTalk\.venv\Lib\site-packages\comtypes\gen'
+2026-05-27 12:16:27,568 INFO clawtalk.tts.windows_tts: TTS playback completed. text_length=14
+2026-05-27 12:16:33,228 INFO clawtalk.hotkey: Global hotkey pressed: ctrl+shift+f9
+2026-05-27 12:16:33,276 INFO clawtalk.ui.main_window: Recording start requested. source=hotkey mode=idle recorder_busy=False input_device_index=33
+2026-05-27 12:16:33,277 INFO clawtalk.ui.main_window: Starting recorder worker. source=hotkey input_device_index=33
+2026-05-27 12:16:33,278 WARNING clawtalk.recorder: Requested sample rate not supported. device_index=33 requested_rate=16000 fallback_rate=48000 error=Invalid sample rate [PaErrorCode -9997]
+2026-05-27 12:16:33,279 INFO clawtalk.recorder: Using fallback sample rate for device. device_index=33 sample_rate=48000
+2026-05-27 12:16:33,297 INFO clawtalk.recorder: Recording started. device_index=33 device_name=Headset Microphone (Logitech G535 Gaming Headset) sample_rate=48000 channels=1
+2026-05-27 12:16:34,792 INFO clawtalk.hotkey: Global hotkey released: ctrl+shift+f9
+2026-05-27 12:16:34,885 INFO clawtalk.ui.main_window: Stopping recorder worker. source=hotkey
+2026-05-27 12:16:34,897 INFO clawtalk.recorder: Recording saved. path=C:\Users\MOBri\AppData\Local\Temp\clawtalk-recordings\clawtalk-recording-20260527-121633-297787-c9b3adfd.wav duration=1.60s size=151724 peak=4130 rms=410 silent=False
+2026-05-27 12:16:34,993 INFO clawtalk.ui.main_window: Starting transcription worker. path=C:\Users\MOBri\AppData\Local\Temp\clawtalk-recordings\clawtalk-recording-20260527-121633-297787-c9b3adfd.wav backend=faster_whisper auto_triggered=True
+2026-05-27 12:16:35,037 INFO faster_whisper: Processing audio with duration 00:01.580
+2026-05-27 12:16:35,040 INFO faster_whisper: VAD filter removed 00:00.000 of audio
+2026-05-27 12:16:35,173 INFO faster_whisper: Detected language 'en' with probability 0.92
+2026-05-27 12:16:35,392 INFO clawtalk.stt.faster_whisper_backend: Transcription completed. backend=faster_whisper model=base device=cuda compute_type=float16 duration=1.58s transcription_time=0.40s
+2026-05-27 12:16:35,416 INFO clawtalk.openclaw.gateway_client: Gateway request starting. url=http://127.0.0.1:18789/v1/chat/completions timeout_seconds=60 method=POST auth=Bearer <redacted>
+2026-05-27 12:16:40,109 INFO clawtalk.openclaw.gateway_client: Gateway request completed. url=http://127.0.0.1:18789/v1/chat/completions status=200 duration=4.692s response_length=308
+2026-05-27 12:16:40,191 INFO clawtalk.ui.main_window: TTS request queued from UI. text_length=15
+2026-05-27 12:16:40,193 INFO clawtalk.tts.windows_tts: TTS request queued. text_length=15
+2026-05-27 12:16:40,193 INFO clawtalk.ui.main_window: Voice interaction timing. transport=gateway duration=4.692s stt=0.397s stop_to_reply=5.199s stop_to_tts=5.201s returncode=200 output_length=308 error_length=0
+2026-05-27 12:16:40,193 INFO clawtalk.tts.windows_tts: TTS playback started. text_length=15
+2026-05-27 12:16:42,413 INFO clawtalk.tts.windows_tts: TTS playback completed. text_length=15
+2026-05-27 12:17:35,303 INFO clawtalk.hotkey: Global hotkey stopped.
+2026-05-27 12:17:35,303 INFO clawtalk.tts.windows_tts: Stopping TTS worker.
+2026-05-27 12:17:35,303 INFO clawtalk.tts.windows_tts: TTS worker received stop signal.

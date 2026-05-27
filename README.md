@@ -33,10 +33,12 @@ clawtalk/
   openclaw/
     __init__.py
     base.py
+    gateway_client.py
     ssh_client.py
   ui/
     __init__.py
     main_window.py
+  gateway_probe.py
 requirements.txt
 README.md
 clawtalk.example.toml
@@ -71,11 +73,16 @@ Copy-Item clawtalk.example.toml clawtalk.toml
 
 Default values:
 
+- `transport = "ssh"`
 - `ssh_target = "eitri-openclaw"`
 - `ssh_host = "eitri"`
 - `ssh_user = "openclaw"`
 - `openclaw_agent = "main"`
 - `openclaw_command_template = "openclaw agent --agent {agent} --message {message}"`
+- `gateway_url = "http://127.0.0.1:18789"`
+- `gateway_token = ""`
+- `gateway_agent = "openclaw/saga"`
+- `gateway_timeout_seconds = 60`
 - `push_to_talk_hotkey = "ctrl+shift+f9"`
 - `recordings_directory = ""`
 - `input_device_index` omitted uses the system default microphone
@@ -146,11 +153,18 @@ Standalone transcription diagnostic:
 python -m clawtalk.stt_test path\to\recording.wav
 ```
 
+Gateway transport probe:
+
+```powershell
+python -m clawtalk.gateway_probe
+```
+
 ## What Works In Phase 1
 
 - Local desktop window titled `ClawTalk`
 - Manual text input and `Send` button
 - SSH-based OpenClaw request execution
+- SSH remains the default stable transport
 - Safe quoting for the agent name and user message inside the remote command template
 - SSH config alias support through `ssh_target`
 - Last user message display
@@ -240,6 +254,40 @@ python -m clawtalk.stt_test path\to\recording.wav
 - Recommendation:
   Keep auto-send off until you trust your mic volume and transcript quality.
 
+## Transport Modes
+
+### SSH Transport
+
+- Stable and default for the current MVP
+- Works well with the existing `ssh_target = "eitri-openclaw"` alias over Tailscale
+- This is still the active transport used by the UI today
+
+### Gateway Transport
+
+- Experimental, and usually faster than the SSH CLI path when the local OpenClaw HTTP Gateway is enabled
+- Config entries exist for future work:
+  - `transport = "gateway"`
+  - `gateway_url`
+  - `gateway_token`
+  - `gateway_agent`
+- Current experimental HTTP path uses:
+  - `POST /v1/chat/completions`
+  - `Authorization: Bearer <gateway token>`
+  - OpenAI-style JSON response parsing from `choices[0].message.content`
+- OpenClaw HTTP endpoint settings to enable on Eitri:
+  - `gateway.http.endpoints.chatCompletions.enabled = true`
+  - `gateway.http.endpoints.responses.enabled = true`
+- Gateway auth uses a bearer token in `gateway_token`
+- The probe command checks `/v1/models` and then sends a tiny test request to the configured `gateway_agent`
+- ClawTalk currently implements the HTTP `/v1/chat/completions` path only
+- Gateway Responses and any future WebSocket/RPC transport are still separate follow-up work
+- WebSocket RPC is still not implemented in ClawTalk
+- Keep the Gateway listener private:
+  - loopback on Eitri
+  - SSH tunnel
+  - Tailscale/private network only
+- Do not bind an OpenClaw Gateway to `0.0.0.0`
+
 ## Faster-Whisper Notes
 
 - `faster-whisper` is used for local transcription in this phase.
@@ -268,6 +316,16 @@ python -m clawtalk.stt_test path\to\recording.wav
 - Verify the configured agent name is valid.
 - Check that your SSH key auth works without interactive prompts.
 - ClawTalk forces UTF-8 decoding for SSH output so smart punctuation should display correctly even on Windows systems with a non-UTF-8 default code page.
+
+### Gateway Probe Fails
+
+- If you are on an older ClawTalk build, upgrade first.
+- In the current build, `python -m clawtalk.gateway_probe` calls `/v1/models` and a small `/v1/chat/completions` request.
+- If it fails, confirm:
+  - `gateway_url` points at the running local Gateway
+  - `gateway_token` is valid
+  - `gateway.http.endpoints.chatCompletions.enabled = true`
+  - `gateway.http.endpoints.responses.enabled = true`
 
 ### TTS Fails
 
@@ -333,6 +391,7 @@ python -m clawtalk.stt_test path\to\recording.wav
 ## Future Upgrade Path
 
 - Direct OpenClaw Gateway access over Tailscale instead of SSH
+- WebSocket/RPC transport in addition to HTTP Gateway
 - Better TTS providers such as OpenAI or ElevenLabs
 - Faster-whisper or another pluggable STT backend
 - Streaming STT and streaming assistant responses

@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import queue
 import threading
+import time
 import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
@@ -11,7 +12,12 @@ from typing import Any, Optional, Tuple
 from clawtalk.config import AppConfig, ConfigError, load_config
 from clawtalk.hotkey import GlobalHotkeyManager, HotkeyError
 from clawtalk.logging_setup import configure_logging
-from clawtalk.openclaw import OpenClawError, OpenClawSSHClient
+from clawtalk.openclaw import (
+    OpenClawClient,
+    OpenClawError,
+    OpenClawResponse,
+    create_openclaw_client,
+)
 from clawtalk.openclaw.ssh_client import resolve_ssh_target
 from clawtalk.recorder import (
     AudioRecorder,
@@ -39,7 +45,7 @@ class MainWindow:
         self._events: "queue.Queue[UIEvent]" = queue.Queue()
         self._worker: Optional[threading.Thread] = None
         self._config: Optional[AppConfig] = None
-        self._client: Optional[OpenClawSSHClient] = None
+        self._client: Optional[OpenClawClient] = None
         self._recorder: Optional[AudioRecorder] = None
         self._stt_backend = None
         self._hotkey_manager: Optional[GlobalHotkeyManager] = None
@@ -50,6 +56,8 @@ class MainWindow:
         self._pending_stop_request = False
         self._transcription_mode = "idle"
         self._last_recording_result: Optional[RecordingResult] = None
+        self._last_recording_stopped_at: Optional[float] = None
+        self._pending_voice_timing_context: Optional[dict[str, float]] = None
 
         self.connection_var = tk.StringVar(value="Loading")
         self.state_var = tk.StringVar(value="Starting")
@@ -204,7 +212,7 @@ class MainWindow:
     def _load_dependencies(self) -> None:
         try:
             self._config = load_config()
-            self._client = OpenClawSSHClient(self._config)
+            self._client = create_openclaw_client(self._config)
             self._recorder = AudioRecorder(
                 recordings_directory=self._config.recordings_directory or None,
                 input_device_index=self._config.input_device_index,
@@ -220,12 +228,16 @@ class MainWindow:
         self.mute_tts_var.set(self._config.mute_tts)
         self.auto_transcribe_var.set(self._config.auto_transcribe_after_recording)
         self.auto_send_var.set(self._config.auto_send_after_transcription)
-        ssh_target = resolve_ssh_target(
-            ssh_target=self._config.ssh_target,
-            ssh_user=self._config.ssh_user,
-            ssh_host=self._config.ssh_host,
-        )
-        self.connection_var.set(f"{ssh_target} (agent: {self._config.openclaw_agent})")
+        if (self._config.transport.strip().lower() or "ssh") == "ssh":
+            ssh_target = resolve_ssh_target(
+                ssh_target=self._config.ssh_target,
+                ssh_user=self._config.ssh_user,
+                ssh_host=self._config.ssh_host,
+            )
+        else:
+            ssh_target = ""
+        connection_summary = format_connection_summary(self._config, ssh_target)
+        self.connection_var.set(connection_summary)
         self._set_state("Idle")
 
         self._append_log("SYSTEM", "Configuration loaded. Ready to send messages.")
@@ -317,7 +329,7 @@ class MainWindow:
     def _send_message_worker(self, message: str) -> None:
         try:
             assert self._client is not None
-            reply = self._client.send_message(message)
+            response = self._client.send_message_details(message)
         except OpenClawError as exc:
             self._events.put(("error", str(exc), ""))
             return
@@ -325,7 +337,7 @@ class MainWindow:
             self._events.put(("error", f"Unexpected error: {exc}", ""))
             return
 
-        self._events.put(("reply", message, reply))
+        self._events.put(("reply", message, response))
 
     def _toggle_recording(self) -> None:
         if self._recording_mode in {"starting", "recording"}:
@@ -514,18 +526,63 @@ class MainWindow:
 
         self.root.after(100, self._drain_events)
 
-    def _handle_reply(self, message: str, reply: str) -> None:
+    def _handle_reply(self, message: str, response: OpenClawResponse) -> None:
+        reply = response.reply_text
         self._show_text(self.reply_display, reply)
         self._append_log("OPENCLAW", reply)
         self.message_input.delete("1.0", tk.END)
+        reply_displayed_at = time.perf_counter()
+        transport_label = "gateway" if response.transport_name == "gateway" else "openclaw"
+        timing_parts = [f"{transport_label}={response.duration_seconds:.2f}s"]
 
         if not self.mute_tts_var.get():
             self._set_state("Speaking")
             logger.info("TTS request queued from UI. text_length=%s", len(reply))
             self._tts.speak_async(reply)
+            tts_queued_at = time.perf_counter()
         else:
             logger.info("TTS muted/skipped for reply. text_length=%s", len(reply))
             self._set_state("Idle")
+            tts_queued_at = None
+
+        if self._pending_voice_timing_context is not None:
+            stop_to_reply = reply_displayed_at - self._pending_voice_timing_context["recording_stopped_at"]
+            timing_parts.append(f"stop->reply={stop_to_reply:.2f}s")
+            if tts_queued_at is not None:
+                stop_to_tts = tts_queued_at - self._pending_voice_timing_context["recording_stopped_at"]
+                timing_parts.append(f"stop->tts={stop_to_tts:.2f}s")
+            stt_duration = self._pending_voice_timing_context.get("stt_duration_seconds")
+            if stt_duration is not None:
+                timing_parts.append(f"stt={stt_duration:.2f}s")
+            logger.info(
+                "Voice interaction timing. transport=%s duration=%.3fs stt=%s stop_to_reply=%.3fs stop_to_tts=%s returncode=%s output_length=%s error_length=%s",
+                response.transport_name,
+                response.duration_seconds,
+                (
+                    f"{self._pending_voice_timing_context.get('stt_duration_seconds'):.3f}s"
+                    if self._pending_voice_timing_context.get("stt_duration_seconds") is not None
+                    else "n/a"
+                ),
+                stop_to_reply,
+                (
+                    f"{stop_to_tts:.3f}s" if tts_queued_at is not None else "n/a"
+                ),
+                response.return_code,
+                response.output_length,
+                response.error_length,
+            )
+            self._pending_voice_timing_context = None
+        else:
+            logger.info(
+                "Text interaction timing. transport=%s duration=%.3fs returncode=%s output_length=%s error_length=%s",
+                response.transport_name,
+                response.duration_seconds,
+                response.return_code,
+                response.output_length,
+                response.error_length,
+            )
+
+        self._append_log("TIMING", " | ".join(timing_parts))
 
     def _handle_error(self, error_message: str) -> None:
         self._show_text(self.reply_display, error_message)
@@ -547,6 +604,7 @@ class MainWindow:
     def _handle_recording_saved(self, source: str, result: RecordingResult) -> None:
         self._recording_mode = "idle"
         self._last_recording_result = result
+        self._last_recording_stopped_at = time.perf_counter()
         self._set_state("Idle")
         self._append_log("RECORDER", f"Recording stopped via {source}.")
         self._append_log("RECORDER", format_recording_result(result))
@@ -591,6 +649,8 @@ class MainWindow:
             )
 
         self._append_log("STT", format_transcription_summary(result))
+        if result.transcription_time_seconds is not None:
+            self._append_log("TIMING", f"stt={result.transcription_time_seconds:.2f}s")
         if result.diagnostics:
             self._append_log("STT", " | ".join(result.diagnostics))
 
@@ -601,6 +661,13 @@ class MainWindow:
         )
         if auto_triggered and auto_send:
             self._append_log("SYSTEM", "Auto-send enabled; sending transcript to OpenClaw.")
+            if self._last_recording_stopped_at is not None:
+                self._pending_voice_timing_context = {
+                    "recording_stopped_at": self._last_recording_stopped_at,
+                    "stt_duration_seconds": result.transcription_time_seconds
+                    if result.transcription_time_seconds is not None
+                    else 0.0,
+                }
             self._set_state("Idle")
             self._send_text_message(result.transcript_text.strip())
             return
@@ -751,3 +818,12 @@ def should_auto_send_transcript(
     if not transcription_result.transcript_text.strip():
         return False, "Transcript was empty."
     return True, ""
+
+
+def format_connection_summary(config: AppConfig, ssh_target: str) -> str:
+    transport = config.transport.strip().lower() or "ssh"
+    if transport == "gateway":
+        agent = config.gateway_agent.strip() or config.openclaw_agent
+        gateway_url = config.gateway_url.strip() or "not configured"
+        return f"gateway: {gateway_url} (agent: {agent})"
+    return f"{ssh_target} (agent: {config.openclaw_agent})"

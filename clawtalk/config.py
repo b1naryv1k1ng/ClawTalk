@@ -16,6 +16,7 @@ EXAMPLE_CONFIG_PATH = Path("clawtalk.example.toml")
 
 @dataclass
 class AppConfig:
+    transport: str = "ssh"
     ssh_target: str = ""
     ssh_host: str = "eitri"
     ssh_user: str = "openclaw"
@@ -23,6 +24,10 @@ class AppConfig:
     openclaw_command_template: str = (
         "openclaw agent --agent {agent} --message {message}"
     )
+    gateway_url: str = ""
+    gateway_token: str = ""
+    gateway_agent: str = "openclaw/saga"
+    gateway_timeout_seconds: int = 60
     mute_tts: bool = False
     push_to_talk_hotkey: str = "ctrl+shift+f9"
     recordings_directory: str = ""
@@ -55,6 +60,7 @@ def load_config(config_path: Path = DEFAULT_CONFIG_PATH) -> AppConfig:
         raise ConfigError(f"Invalid TOML in config file: {exc}") from exc
 
     return AppConfig(
+        transport=_read_string(raw_config, "transport", AppConfig.transport),
         ssh_target=_read_string(raw_config, "ssh_target", AppConfig.ssh_target),
         ssh_host=_read_string(raw_config, "ssh_host", AppConfig.ssh_host),
         ssh_user=_read_string(raw_config, "ssh_user", AppConfig.ssh_user),
@@ -65,6 +71,20 @@ def load_config(config_path: Path = DEFAULT_CONFIG_PATH) -> AppConfig:
             raw_config,
             "openclaw_command_template",
             AppConfig.openclaw_command_template,
+        ),
+        gateway_url=_read_string(
+            raw_config, "gateway_url", AppConfig.gateway_url
+        ),
+        gateway_token=_read_string(
+            raw_config, "gateway_token", AppConfig.gateway_token
+        ),
+        gateway_agent=_read_string(
+            raw_config, "gateway_agent", AppConfig.gateway_agent
+        ),
+        gateway_timeout_seconds=_read_int(
+            raw_config,
+            "gateway_timeout_seconds",
+            AppConfig.gateway_timeout_seconds,
         ),
         mute_tts=_read_bool(raw_config, "mute_tts", AppConfig.mute_tts),
         push_to_talk_hotkey=_read_string(
@@ -119,4 +139,11 @@ def _read_optional_int(config: Dict[str, Any], key: str, default: Optional[int])
         return None
     if not isinstance(value, int):
         raise ConfigError(f"Config value '{key}' must be an integer or omitted.")
+    return value
+
+
+def _read_int(config: Dict[str, Any], key: str, default: int) -> int:
+    value = config.get(key, default)
+    if not isinstance(value, int):
+        raise ConfigError(f"Config value '{key}' must be an integer.")
     return value

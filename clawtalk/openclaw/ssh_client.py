@@ -3,24 +3,21 @@ from __future__ import annotations
 import logging
 import shlex
 import subprocess
+import time
 from typing import Optional
 
 from clawtalk.config import AppConfig
-from clawtalk.openclaw.base import OpenClawClient
+from clawtalk.openclaw.base import OpenClawClient, OpenClawError, OpenClawResponse
 
 
 logger = logging.getLogger(__name__)
-
-
-class OpenClawError(Exception):
-    pass
 
 
 class OpenClawSSHClient(OpenClawClient):
     def __init__(self, config: AppConfig) -> None:
         self._config = config
 
-    def send_message(self, message: str) -> str:
+    def send_message_details(self, message: str) -> OpenClawResponse:
         sanitized_message = message.strip()
         if not sanitized_message:
             raise OpenClawError("Message is empty.")
@@ -36,6 +33,7 @@ class OpenClawSSHClient(OpenClawClient):
             ssh_host=self._config.ssh_host,
         )
 
+        started_at = time.perf_counter()
         try:
             completed = subprocess.run(
                 ["ssh", ssh_target, remote_command],
@@ -51,11 +49,15 @@ class OpenClawSSHClient(OpenClawClient):
             ) from exc
         except OSError as exc:
             raise OpenClawError(f"Could not run SSH command: {exc}") from exc
+        ended_at = time.perf_counter()
 
         stdout = normalize_ssh_output(completed.stdout)
         stderr = normalize_ssh_output(completed.stderr)
-        logger.debug(
-            "SSH completed. returncode=%s stdout_length=%s stderr_length=%s",
+        logger.info(
+            "SSH timing. start=%.6f end=%.6f duration=%.3fs returncode=%s stdout_length=%s stderr_length=%s",
+            started_at,
+            ended_at,
+            ended_at - started_at,
             completed.returncode,
             len(stdout),
             len(stderr),
@@ -68,7 +70,16 @@ class OpenClawSSHClient(OpenClawClient):
         if not stdout:
             raise OpenClawError("OpenClaw returned an empty response.")
 
-        return stdout
+        return OpenClawResponse(
+            reply_text=stdout,
+            transport_name="ssh",
+            started_at=started_at,
+            ended_at=ended_at,
+            duration_seconds=ended_at - started_at,
+            return_code=completed.returncode,
+            output_length=len(stdout),
+            error_length=len(stderr),
+        )
 
 
 def build_openclaw_remote_command(

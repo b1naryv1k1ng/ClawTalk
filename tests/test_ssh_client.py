@@ -1,6 +1,11 @@
 import unittest
 
+from clawtalk.config import AppConfig
+from clawtalk.gateway_probe import redact_token
+from clawtalk.openclaw import create_openclaw_client
+from clawtalk.openclaw.gateway_client import OpenClawGatewayClient
 from clawtalk.openclaw.ssh_client import (
+    OpenClawSSHClient,
     build_openclaw_remote_command,
     normalize_ssh_output,
     resolve_ssh_target,
@@ -66,6 +71,19 @@ class OpenClawSSHClientTests(unittest.TestCase):
     def test_normalize_ssh_output_preserves_utf8_smart_punctuation(self) -> None:
         text = 'I’m Codex — “quoted text”\n'
         self.assertEqual(normalize_ssh_output(text), 'I’m Codex — “quoted text”')
+
+    def test_factory_returns_ssh_client_by_default(self) -> None:
+        client = create_openclaw_client(AppConfig())
+        self.assertIsInstance(client, OpenClawSSHClient)
+
+    def test_factory_returns_gateway_client_when_configured(self) -> None:
+        client = create_openclaw_client(AppConfig(transport="gateway"))
+        self.assertIsInstance(client, OpenClawGatewayClient)
+
+    def test_redact_token_hides_secret_value(self) -> None:
+        self.assertEqual(redact_token(""), "(not set)")
+        self.assertEqual(redact_token("abcd"), "****")
+        self.assertEqual(redact_token("abcdefgh"), "abcd...8 chars")
 
 
 if __name__ == "__main__":
