@@ -1,0 +1,16 @@
+ssh_target = "eitri-openclaw"
+ssh_host = "eitri"
+ssh_user = "openclaw"
+openclaw_agent = "main"
+openclaw_command_template = "openclaw agent --agent {agent} --message {message}"
+mute_tts = false
+push_to_talk_hotkey = "ctrl+space"
+recordings_directory = ""
+# Set this to a device index from `python -m clawtalk.recorder_devices` if needed.
+# Example: input_device_index = 3
+# input_device_index = 33
+stt_backend = "faster_whisper"
+whisper_model_size = "base"
+whisper_device = "auto"
+whisper_compute_type = "auto"
+auto_transcribe_after_recording = false
